@@ -118,13 +118,24 @@ public class MapChart extends Chart {
 	protected void updateEdgeDataCenters() {
 		// Only if Edge computing is used
 		if (simulationManager.getScenario().getStringOrchArchitecture().contains("EDGE")
-				|| simulationManager.getScenario().getStringOrchArchitecture().equals("ALL")) {
+				|| simulationManager.getScenario().getStringOrchArchitecture().equals("ALL")
+				|| simulationManager.getScenario().getStringOrchArchitecture().equals("CLOUD")) {
+			
 			// List of idle servers
 			List<Double> x_idleEdgeDataCentersList = new ArrayList<>();
 			List<Double> y_idleEdgeDataCentersList = new ArrayList<>();
 			// List of active servers
 			List<Double> x_activeEdgeDataCentersList = new ArrayList<>();
 			List<Double> y_activeEdgeDataCentersList = new ArrayList<>();
+			
+			
+			// List of idle cloud servers
+			List<Double> x_idleCloudDataCentersList = new ArrayList<>();
+			List<Double> y_idleCloudDataCentersList = new ArrayList<>();
+			// List of active cloud servers
+			List<Double> x_activeCloudDataCentersList = new ArrayList<>();
+			List<Double> y_activeCloudDataCentersList = new ArrayList<>();
+			
 
 			for (ComputingNode node : computingNodesGenerator.getEdgeOnlyList()) {
 				ComputingNode edgeDataCenter = node;
@@ -139,12 +150,36 @@ public class MapChart extends Chart {
 
 				}
 			}
+			
+			for (ComputingNode node : computingNodesGenerator.getCloudOnlyList()) {
+				ComputingNode CloudDataCenter = node;
+				double Xpos = CloudDataCenter.getMobilityModel().getCurrentLocation().getXPos();
+				double Ypos = CloudDataCenter.getMobilityModel().getCurrentLocation().getYPos();
+				/*
+				System.out.println("LA POSIZIONE DEL CLOUD È: (" + CloudDataCenter.getMobilityModel().getCurrentLocation().getXPos() + "," + 
+						CloudDataCenter.getMobilityModel().getCurrentLocation().getYPos() + ")");*/
+				
+				if (CloudDataCenter.isIdle()) {
+					x_idleCloudDataCentersList.add(Xpos);
+					y_idleCloudDataCentersList.add(Ypos);
+				} else {
+					x_activeCloudDataCentersList.add(Xpos);
+					y_activeCloudDataCentersList.add(Ypos);
 
+				}
+			}
+			
 			updateSeries(getChart(), "Idle Edge data centers", toArray(x_idleEdgeDataCentersList),
 					toArray(y_idleEdgeDataCentersList), SeriesMarkers.CROSS, Color.BLACK);
 
 			updateSeries(getChart(), "Active Edge data centers", toArray(x_activeEdgeDataCentersList),
 					toArray(y_activeEdgeDataCentersList), SeriesMarkers.CROSS, Color.red);
+			
+			updateSeries(getChart(), "Idle Cloud data centers", toArray(x_idleCloudDataCentersList),
+					toArray(y_idleCloudDataCentersList), SeriesMarkers.DIAMOND, Color.BLACK);
+
+			updateSeries(getChart(), "Active Cloud data centers", toArray(x_activeCloudDataCentersList),
+					toArray(y_activeCloudDataCentersList), SeriesMarkers.DIAMOND, Color.red);
 
 		}
 	}
