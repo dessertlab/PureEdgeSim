@@ -35,8 +35,8 @@ public abstract class LocationAwareNode extends EnergyAwareNode {
 	}
 
 	@Override
-	public void onSimulationStart() {
-		super.onSimulationStart();
+	public void startInternal() {
+		super.startInternal();
 		mobilityModel.generatePath();
 	}
 
@@ -46,7 +46,7 @@ public abstract class LocationAwareNode extends EnergyAwareNode {
 		// Update location
 		if (getMobilityModel().isMobile() && !isDead) {
 			getMobilityModel().updateLocation(simulationManager.getSimulation().clock());
-			connectWith(getMobilityModel().getClosestEdgeDataCenter());
+			//connectWith(getMobilityModel().getClosestEdgeDataCenter());
 		}
 	}
 

@@ -32,13 +32,22 @@ public abstract class NetworkingNode extends AbstractNode  {
 	protected NetworkLink currentUpLink = NetworkLink.NULL;
 	protected NetworkLink currentDownLink = NetworkLink.NULL;
 	protected NetworkLink currentDeviceToDeviceWifiLink = NetworkLink.NULL;
+	protected boolean isConnect; //Verify if the ONT Device is already connect to an edge device
 	List<ComputingNode> vertexList = new ArrayList<>();
 	List<NetworkLink> edgeList = new ArrayList<>();
 
 	protected NetworkingNode(SimulationManager simulationManager) {
 		super(simulationManager);
 	}
-
+	
+	public boolean isConnect() {
+		return isConnect;
+	}
+	
+	public void setAsConnect(boolean isConnect) {
+		this.isConnect = isConnect;
+	}
+	
 	/**
 	 * Returns the current network link of the specified type. For example, if the
 	 * type is {@link LinkOrientation#UP_LINK}, it returns the link that is used currently

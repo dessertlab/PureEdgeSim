@@ -112,6 +112,10 @@ public interface ComputingNode {
 	 */
 	String getName();
 
+	boolean isConnect();
+	
+	void setAsConnect(boolean isConnect);
+	
 	/**
 	 * Checks if this computing node is an orchestrator.
 	 * 
@@ -157,7 +161,7 @@ public interface ComputingNode {
 	 * only when the type of this node is
 	 * {@link SimulationParameters.TYPES#EDGE_DEVICE}.
 	 * 
-	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNodesGenerator#generateEdgeDevices()
+	 * @see ComputingNodesGenerator#generateEdgeDevices()
 	 * @see #isGeneratingTasks()
 	 * 
 	 * @param generateTasks true when this edge device can generate tasks, false
@@ -173,7 +177,7 @@ public interface ComputingNode {
 	 * @return whether this computing node generates tasks (e.g. an IoT sensor), or
 	 *         not.
 	 * 
-	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNodesGenerator#generateEdgeDevices()
+	 * @see ComputingNodesGenerator#generateEdgeDevices()
 	 * @see #enableTaskGeneration(boolean)
 	 */
 	boolean isGeneratingTasks();

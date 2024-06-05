@@ -88,6 +88,16 @@ public class ComputingNodeNull implements ComputingNode {
 		return "";
 	}
 
+	@Override
+	public boolean isConnect() {
+		return false;
+	}
+	
+	@Override
+	public void setAsConnect(boolean isConnect) {
+		
+	}
+	
 	/**
 	 * 
 	 * Returns false since this Computing Node is not an orchestrator.

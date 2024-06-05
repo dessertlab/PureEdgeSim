@@ -20,6 +20,22 @@
  **/
 package com.mechalikh.pureedgesim.datacentersmanager;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
+
+import com.mechalikh.pureedgesim.datacentersmanager.ComputingNode;
+import com.mechalikh.pureedgesim.network.NetworkLink.NetworkLinkTypes;
+
+
+
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream; 
@@ -41,12 +57,14 @@ import com.mechalikh.pureedgesim.network.NetworkLinkCellularDown;
 import com.mechalikh.pureedgesim.network.NetworkLinkCellularUp;
 import com.mechalikh.pureedgesim.network.NetworkLinkEthernet;
 import com.mechalikh.pureedgesim.network.NetworkLinkMan;
+import com.mechalikh.pureedgesim.network.NetworkLinkFiber;
 import com.mechalikh.pureedgesim.network.NetworkLinkWanDown;
 import com.mechalikh.pureedgesim.network.NetworkLinkWanUp;
 import com.mechalikh.pureedgesim.network.NetworkLinkWifiDeviceToDevice;
 import com.mechalikh.pureedgesim.network.NetworkLinkWifiDown;
 import com.mechalikh.pureedgesim.network.NetworkLinkWifiUp;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
+import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 
 
@@ -80,12 +98,52 @@ public class DefaultTopologyCreator extends TopologyCreator {
 	public void generateTopologyGraph() {
 		// Create a WAN link to connect all the edge devices to the cloud data center
 		ComputingNode wanNode = createWanLink();
-
+		
+		
+		//Connect each edge device to the closest ONT using Ethernet Link (LAN)
+		for (ComputingNode edgeDevice : computingNodesGenerator.getMistOnlyList()) {
+			NetworkLink DeviceUp;
+			NetworkLink DeviceDown;
+			ComputingNode closestONT = ComputingNode.NULL;
+			double shortestDistanceToONT = Double.MAX_VALUE;
+			for (ComputingNode ONTDevice : computingNodesGenerator.getONT_List()) {
+				//Check if the ONT Device is already connect to an edge device
+				if (!ONTDevice.isConnect()) {
+					double DistanceToONT = edgeDevice.getMobilityModel().distanceTo(ONTDevice);
+					if (DistanceToONT < shortestDistanceToONT) {  
+						shortestDistanceToONT = DistanceToONT;
+						closestONT = ONTDevice;
+					}
+				}
+			}
+			DeviceUp = new NetworkLinkEthernet(edgeDevice, closestONT, simulationManager, NetworkLinkTypes.LAN);
+			DeviceDown = new NetworkLinkEthernet(closestONT, edgeDevice, simulationManager, NetworkLinkTypes.LAN);
+			infrastructureTopology.addLink(DeviceUp);
+			infrastructureTopology.addLink(DeviceDown);
+			edgeDevice.setCurrentLink(DeviceUp, LinkOrientation.UP_LINK);
+			edgeDevice.setCurrentLink(DeviceDown, LinkOrientation.DOWN_LINK);
+			edgeDevice.getCurrentLink(LinkOrientation.UP_LINK).setDst(closestONT);
+			edgeDevice.getCurrentLink(LinkOrientation.DOWN_LINK).setSrc(closestONT);
+			closestONT.setAsConnect(true);
+		}
+		/*
+		//Connect each ONT to the cloud data center using Ethernet link (WAN)
+		for(ComputingNode ONTDevice : computingNodesGenerator.getONT_List()) {
+			NetworkLink ONTup;
+			NetworkLink ONTdown;
+			ONTup = new NetworkLinkEthernet(ONTDevice, wanNode, simulationManager, NetworkLinkTypes.WAN);
+			ONTdown = new NetworkLinkEthernet(wanNode, ONTDevice, simulationManager, NetworkLinkTypes.WAN);
+			infrastructureTopology.addLink(ONTup);
+			infrastructureTopology.addLink(ONTdown);
+		}*/
+		
+		/**
 		// Connect each edge device to the cloud data center using WAN link
 		for (ComputingNode edgeDevice : computingNodesGenerator.getMistOnlyList()) {
 			connect(edgeDevice, wanNode, NetworkLinkTypes.WAN);
 		}
-
+		*/
+		
 		// Generate the topology of edge data centers from an XML file
 		generateTopologyFromXmlFile();
 
@@ -93,9 +151,11 @@ public class DefaultTopologyCreator extends TopologyCreator {
 		ComputingNode dc1 = getDataCenterByName("dc1");
 		infrastructureTopology.addLink(new NetworkLinkWanUp(dc1, wanNode, simulationManager, NetworkLinkTypes.WAN));
 		infrastructureTopology.addLink(new NetworkLinkWanDown(wanNode, dc1, simulationManager, NetworkLinkTypes.WAN));
-
-		// Connect each edge device with the closest edge data center using LAN link
+		
+		
+		// Connect each edge device with the closest edge data center using LAN link (SET DEVICE_TO_DEVICE LINK)
 		double range = SimulationParameters.edgeDataCentersRange;
+		/**
 		for (ComputingNode edgeDevice : computingNodesGenerator.getMistOnlyList()) {
 			ComputingNode closestDC = ComputingNode.NULL;
 			double shortestDistance = Double.MAX_VALUE;
@@ -108,18 +168,60 @@ public class DefaultTopologyCreator extends TopologyCreator {
 					}
 				}
 			}
-			connect(edgeDevice, closestDC, NetworkLinkTypes.LAN);
-
+			//connect(edgeDevice, closestDC, NetworkLinkTypes.LAN);
 			// Set the current link of the edge device to the closest edge data center
 			edgeDevice.setCurrentLink(
 					new NetworkLinkWifiDeviceToDevice(edgeDevice, closestDC, simulationManager, NetworkLinkTypes.LAN),
 					LinkOrientation.DEVICE_TO_DEVICE);
 		}
+		*/
+		
+		//Connect each ONT to the closest edge data center using Fiber Link (FIBER)
+		for (ComputingNode ONTDevice : computingNodesGenerator.getONT_List()) {
+			ComputingNode closestDC = ComputingNode.NULL;
+			double shortestDistance = Double.MAX_VALUE;
+			for (ComputingNode edgeDC : computingNodesGenerator.getEdgeOnlyList()) {
+				if (edgeDC.isPeripheral()) {
+					double distance = ONTDevice.getMobilityModel().distanceTo(edgeDC);
+					if (distance <= range && distance < shortestDistance) {
+						shortestDistance = distance;
+						closestDC = edgeDC;
+					}
+				}
+			}
+			NetworkLink ONTup;
+			NetworkLink ONTdown;
+			ONTup = new NetworkLinkFiber(ONTDevice, closestDC, simulationManager, NetworkLinkTypes.FIBER);
+			ONTdown = new NetworkLinkFiber(closestDC, ONTDevice, simulationManager, NetworkLinkTypes.FIBER);
+			infrastructureTopology.addLink(ONTup);
+			infrastructureTopology.addLink(ONTdown);
+			simulationManager.getNetworkModel().getFiberUp().add(ONTup);
+			simulationManager.getNetworkModel().getFiberDown().add(ONTdown);
+		}
+		
+		/**
+		DirectedWeightedMultigraph<ComputingNode, NetworkLink> graph = infrastructureTopology.getGraph();
+		System.out.println("Nodi:");
+        for (ComputingNode node : graph.vertexSet()) {
+            System.out.println(" - " + node.getName());
+        }
 
+        // Stampa tutti gli archi
+        System.out.println("\nCollegamenti:");
+        for (NetworkLink edge : graph.edgeSet()) {
+            ComputingNode sourceNode = graph.getEdgeSource(edge);
+            ComputingNode targetNode = graph.getEdgeTarget(edge);
+            NetworkLinkTypes tipo = edge.getType();
+
+            System.out.println(" - " + sourceNode.getName() + " -> " + targetNode.getName() + ", Rete: " + tipo);
+        }
+		*/
+		
 		// Save the shortest paths between all computing nodes
-		infrastructureTopology.savePathsToMap(computingNodesGenerator.getEdgeAndCloudList());
+		//infrastructureTopology.savePathsToMap(computingNodesGenerator.getEdgeAndCloudList());
+		infrastructureTopology.savePathsToMap(computingNodesGenerator.getONTandServer_List());
 	}
-
+	
 	/**
 	 * This function creates a WAN link between the cloud data center and the
 	 * infrastructure node.
@@ -131,11 +233,13 @@ public class DefaultTopologyCreator extends TopologyCreator {
 		// To do so, first let's get the cloud data center.
 		// If you have more than one data center, you will need to link them all
 		ComputingNode cloud = computingNodesGenerator.getCloudOnlyList().get(0);
+		cloud.setName("CLOUD");
 
 		// If we want all data to be sent over the same wan network.
 		if (SimulationParameters.useOneSharedWanLink) {
 			// We need to create another node to link with the cloud.
 			ComputingNode metroRouter = new Router(simulationManager);
+			metroRouter.setName("metroRouter");
 
 			// After that, we can link it with the cloud. We select type IGNORE to avoid
 			// measuring energy consumption twice.

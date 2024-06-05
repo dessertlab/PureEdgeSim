@@ -9,6 +9,11 @@ public class Router extends DefaultComputingNode {
 	}
 
 	@Override
+	public void startInternal() {
+		// Do nothing
+	}
+
+	@Override
 	public void setApplicationPlacementLocation(ComputingNode node) {
 		// Do nothing
 	}

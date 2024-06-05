@@ -48,7 +48,7 @@ public class DataCentersManager {
 	 * files.
 	 * 
 	 * @see #generateComputingNodes()
-	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNodesGenerator
+	 * @see com.mechalikh.pureedgesim.datacentersmanager.ComputingNodesGenerator
 	 */
 	protected ComputingNodesGenerator computingNodesGenerator;
 
@@ -62,28 +62,21 @@ public class DataCentersManager {
 	/**
 	 * Initializes the DataCentersManager
 	 *
-	 * @param simulationManager  			The simulation manager
-	 * @param mobilityModelClass 			The mobility model class that will be used in the
-	 *                           			simulation
-	 * @param computingNodeClass 			The computing node class that will be used to
-	 *                           			generate computing resources
-	 * @param computingNodesGeneratorClass	The computing node generator class that will be
-	 * 										used to generate all resources from the XML
-	 * 										files
-	 * @param topologyCreatorClass			The topology creator class that will be used to
-	 * 										generate the network topology
+	 * @param simulationManager  The simulation Manager
+	 * @param mobilityModelClass The mobility model that will be used in the
+	 *                           simulation
+	 * @param computingNodeClass The computing node class that will be used to
+	 *                           generate computing resources
+	 * @param topologyCreator
 	 */
-	public DataCentersManager(SimulationManager simulationManager, 
-			Class<? extends MobilityModel> mobilityModelClass,
-			Class<? extends ComputingNode> computingNodeClass, 
-			Class<? extends ComputingNodesGenerator> computingNodesGeneratorClass,
-			Class<? extends TopologyCreator> topologyCreatorClass) {
+	public DataCentersManager(SimulationManager simulationManager, Class<? extends MobilityModel> mobilityModelClass,
+			Class<? extends ComputingNode> computingNodeClass, Class<? extends TopologyCreator> topologyCreatorClass) {
 		this.simulationManager = simulationManager;
 		// Add this to the simulation manager and submit computing nodes to broker
 		simulationManager.setDataCentersManager(this);
 
-		// Generate all data centers, servers, and devices
-		generateComputingNodes(mobilityModelClass, computingNodeClass, computingNodesGeneratorClass);
+		// Generate all data centers, servers, an devices
+		generateComputingNodes(mobilityModelClass, computingNodeClass);
 
 		// Generate topology
 		createTopology(topologyCreatorClass);
@@ -92,25 +85,19 @@ public class DataCentersManager {
 	/**
 	 * Generates all computing nodes.
 	 * 
-	 * @param mobilityModelClass
 	 * @param computingNodeClass
-	 * @param computingNodesGeneratorClass
+	 * @param mobilityModelClass
 	 */
 	protected void generateComputingNodes(Class<? extends MobilityModel> mobilityModelClass,
-			Class<? extends ComputingNode> computingNodeClass, 
-			Class<? extends ComputingNodesGenerator> computingNodesGeneratorClass) {
+			Class<? extends ComputingNode> computingNodeClass) {
 		SimLog.println("%s - Generating computing nodes...",this.getClass().getSimpleName());
-		Constructor<?> computingNodesGeneratorConstructor;
-		try {
-			computingNodesGeneratorConstructor = computingNodesGeneratorClass.getConstructor(SimulationManager.class,
-					Class.class, Class.class);
-
-			computingNodesGenerator = (ComputingNodesGenerator) computingNodesGeneratorConstructor.newInstance(simulationManager,
-					mobilityModelClass, computingNodeClass);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		computingNodesGenerator = new ComputingNodesGenerator(simulationManager, mobilityModelClass,
+				computingNodeClass);
 		computingNodesGenerator.generateDatacentersAndDevices();
+		//SimLog.println("ONT generati: " + computingNodesGenerator.getONT_List().size());
+		//SimLog.println("Edge devices generati: " + computingNodesGenerator.getMistOnlyList().size());
+		//SimLog.println("Data Center generati: " + computingNodesGenerator.getEdgeOnlyList().size());
+		//SimLog.println("Cloud Data center generati: " + computingNodesGenerator.getCloudOnlyList().size());
 	}
 
 	/**
