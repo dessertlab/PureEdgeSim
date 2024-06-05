@@ -29,6 +29,8 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationengine.Event;
 import com.mechalikh.pureedgesim.simulationengine.SimEntity;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
+import com.mechalikh.pureedgesim.network.Bandwidth;
+
 
 /**
  * Link between two compute nodes in the infrastructure graph
@@ -42,12 +44,13 @@ public class NetworkLink extends SimEntity {
 	protected ComputingNode dst = ComputingNode.NULL;
 	protected SimulationManager simulationManager;
 	protected double usedBandwidth = 0;
+	protected List<Bandwidth> UsedBandwidthList = new ArrayList<>();
 	protected double totalTrasferredData = 0;
 	protected EnergyModelNetworkLink energyModel = EnergyModelNetworkLink.NULL;
 	protected boolean scheduled = false;
 
 	public enum NetworkLinkTypes {
-		WAN, MAN, LAN, IGNORE
+		WAN, FIBER, MAN, LAN, IGNORE
 	}
 
 	protected NetworkLinkTypes type;
@@ -78,6 +81,15 @@ public class NetworkLink extends SimEntity {
 	public NetworkLink setBandwidth(double bandwidth) {
 		this.bandwidth = bandwidth;
 		return this;
+	}
+
+	/**
+	 * Defines the logic to be performed by the network link when the simulation
+	 * starts.
+	 */
+	@Override
+	public void startInternal() {
+		// Do nothing for now.
 	}
 
 	public ComputingNode getSrc() {
@@ -111,18 +123,79 @@ public class NetworkLink extends SimEntity {
 
 	protected void updateTransfersProgress() {
 		usedBandwidth = 0;
-		double allocatedBandwidth = getBandwidth(transferProgressList.size());
+		for (Bandwidth bandwidth : UsedBandwidthList) {
+			bandwidth.usedBandwidth = 0;
+		}
+		
+		double allocatedBandwidth = 0; 
+		
 		for (int i = 0; i < transferProgressList.size(); i++) {
+			
+			if (!SimulationParameters.BandwidthAllocationOnApplicationType) {
+				allocatedBandwidth = getBandwidth(transferProgressList.size());
+			} else {
+				allocatedBandwidth = getBandwidthOnType(transferProgressList.get(i));
+			}
+			
 			// Allocate bandwidth
 			usedBandwidth += transferProgressList.get(i).getRemainingFileSize();
-
+			
+			if (this.getType()==NetworkLinkTypes.FIBER) 
+				UpdateBandwidth(transferProgressList.get(i));
+				
 			transferProgressList.get(i).setCurrentBandwidth(allocatedBandwidth);
 			updateTransfer(transferProgressList.get(i));
 		}
 	}
+	
+	protected void UpdateBandwidth(TransferProgress T) {
+		boolean found = false;
+        for (Bandwidth bandwidth : UsedBandwidthList) {
+            if (bandwidth.ApplicationName.equals(T.getTask().getAssociatedAppName())) {
+                bandwidth.usedBandwidth += T.getRemainingFileSize();
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            UsedBandwidthList.add(new Bandwidth(T.getTask().getAssociatedAppName(), bandwidth, T.getRemainingFileSize()));
+            //System.out.println("Nuovo oggetto bandwidth relativo all'app" + T.getTask().getAssociatedAppName() + "aggiunto al link: " + this.getId());
+        }		
+	}
 
 	protected double getBandwidth(double remainingTasksCount) {
 		return (bandwidth / (remainingTasksCount > 0 ? remainingTasksCount : 1));
+	}
+	
+	protected double getBandwidthOnType(TransferProgress task) { 
+		double BandwidthValue = 0;
+		
+		if (SimulationParameters.AllocationValue.equals("LATENCY")) {
+			
+			double latency = task.getTask().getMaxLatency();
+			
+			if (latency <= 0.05) {
+				BandwidthValue = bandwidth*50/100;
+			} else if (latency > 0.05 && latency <= 0.2) {
+				BandwidthValue = bandwidth*25/100;
+			} else if (latency > 0.2) {
+				BandwidthValue = bandwidth*10/100;
+			}
+			
+		} else {
+			double task_length = task.getTask().getLength();
+			
+			if (task_length > 1000) {
+				BandwidthValue = bandwidth*50/100;
+			} else if (task_length > 100 && task_length <= 1000) {
+				BandwidthValue = bandwidth*25/100;
+			} else if (task_length <= 100) {
+				BandwidthValue = bandwidth*10/100;
+			}
+			
+		}
+	
+		return BandwidthValue;
 	}
 
 	protected void updateTransfer(TransferProgress transfer) {
@@ -145,6 +218,10 @@ public class NetworkLink extends SimEntity {
 		// Update network usage delay
 		if (type == NetworkLinkTypes.LAN)
 			transfer.setLanNetworkUsage(transfer.getLanNetworkUsage() + transferDelay);
+		
+		// Update MAN network usage delay
+		else if (type == NetworkLinkTypes.FIBER)
+			transfer.setFiberNetworkUsage(transfer.getFiberNetworkUsage() + transferDelay);
 
 		// Update MAN network usage delay
 		else if (type == NetworkLinkTypes.MAN)
@@ -165,7 +242,7 @@ public class NetworkLink extends SimEntity {
 		this.transferProgressList.remove(transfer);
 
 		// Add the network link latency to the task network delay
-		transfer.getTask().addActualNetworkTime(latency);
+		transfer.getTask().addActualNetworkTime(0);
 
 		// Remove the previous hop (data has been transferred one hop)
 		transfer.getVertexList().remove(0);
@@ -186,6 +263,7 @@ public class NetworkLink extends SimEntity {
 
 	public double getUsedBandwidth() {
 		// Return bandwidth usage in bits per second
+		//System.out.println("VALORE RESTITUITO DALLA GETUSEDBAND: " + Math.min(bandwidth, usedBandwidth));
 		return Math.min(bandwidth, usedBandwidth);
 	}
 
@@ -220,5 +298,17 @@ public class NetworkLink extends SimEntity {
 	public double getTotalTransferredData() {
 		return totalTrasferredData;
 	}
+	
+	public List<Bandwidth> getUsedBandwidthList(){
+		return this.UsedBandwidthList;
+	}
 
+	/**
+	 * Defines the logic to be performed by the network link when the simulation
+	 * ends.
+	 */
+	@Override
+	public void onSimulationEnd() {
+		// Do something when the simulation finishes.
+	}
 }

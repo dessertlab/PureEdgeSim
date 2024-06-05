@@ -32,6 +32,7 @@ public class TransferProgress {
 
 	protected Task task;
 	protected double wanNetworkUsage = 0; // seconds
+	protected double FiberNetworkUsage = 0; //seconds
 	protected double manNetworkUsage = 0; // seconds
 	protected double lanNetworkUsage = 0; // seconds
 	protected Type transferType; 
@@ -127,5 +128,13 @@ public class TransferProgress {
 	public void setManNetworkUsage(double manNetworkUsage) {
 		this.manNetworkUsage = manNetworkUsage;
 	}
+	
+	public double getFiberNetworkUsage() {
+		return FiberNetworkUsage;
+	}
 
+	public void setFiberNetworkUsage(double FiberNetworkUsage) {
+		this.FiberNetworkUsage = FiberNetworkUsage;
+	}
+	
 }

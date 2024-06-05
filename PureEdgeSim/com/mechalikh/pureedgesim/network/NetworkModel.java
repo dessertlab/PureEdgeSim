@@ -20,10 +20,16 @@
  **/
 package com.mechalikh.pureedgesim.network;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 import com.mechalikh.pureedgesim.datacentersmanager.ComputingNode;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationengine.SimEntity;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
+import com.mechalikh.pureedgesim.network.Bandwidth;
 
 /**
  * The main class of the Network module, that handles all network events, and
@@ -44,6 +50,10 @@ public abstract class NetworkModel extends SimEntity {
 	protected SimulationManager simulationManager;
 	protected NetworkLinkWanUp wanUp;
 	protected NetworkLinkWanDown wanDown;
+	protected List<NetworkLink> FiberUpList = new ArrayList<>();
+	protected List<NetworkLink> FiberDownList = new ArrayList<>();
+	protected Map<String,Double> appBandwidthUpMap = new HashMap<>();
+	protected Map<String,Double> appBandwidthDownMap = new HashMap<>();
 
 	protected NetworkModel(SimulationManager simulationManager) {
 		super(simulationManager.getSimulation());
@@ -64,6 +74,43 @@ public abstract class NetworkModel extends SimEntity {
 		this.wanUp = wanUp;
 		this.wanDown = wanDown;
 	}
+	
+	public Map<String,Double>/* Double*/ getFiberUpUtilization() {
+		//double totalUsedBandwidth = FiberUpList.stream().mapToDouble(NetworkLink::getUsedBandwidth).sum();
+		
+		for (Map.Entry<String, Double> entry : appBandwidthUpMap.entrySet()) {
+            entry.setValue(0.0);
+        }
+		    
+		for (NetworkLink link : FiberUpList) {
+			for(Bandwidth bandwidth : link.getUsedBandwidthList()) {
+				appBandwidthUpMap.put(bandwidth.ApplicationName, appBandwidthUpMap.getOrDefault(bandwidth.ApplicationName, 0.0) + bandwidth.getCustomUsedBandwidth());
+			}
+		}
+		/*
+		for (Map.Entry<String, Double> entry : appBandwidthUpMap.entrySet()) {
+            System.out.println("Chiave: " + entry.getKey() + ", Valore: " + entry.getValue());
+        }
+		*/
+		return appBandwidthUpMap;
+		 //return totalUsedBandwidth;
+	}
+	
+	public Map<String,Double>/* Double*/ getFiberDownUtilization() {
+		//double totalUsedBandwidth = FiberDownList.stream().mapToDouble(NetworkLink::getUsedBandwidth).sum();
+		
+		for (Map.Entry<String, Double> entry : appBandwidthDownMap.entrySet()) {
+            entry.setValue(0.0);
+        }
+		
+		for (NetworkLink link : FiberDownList) {
+			for(Bandwidth bandwidth : link.UsedBandwidthList) {
+				appBandwidthDownMap.put(bandwidth.ApplicationName, appBandwidthDownMap.getOrDefault(bandwidth.ApplicationName, 0.0) + bandwidth.getCustomUsedBandwidth());
+			}
+		}
+		return appBandwidthDownMap;
+		//return totalUsedBandwidth;
+	}
 
 	public double getWanUpUtilization() {
 		if (!SimulationParameters.useOneSharedWanLink)
@@ -77,6 +124,14 @@ public abstract class NetworkModel extends SimEntity {
 			throw new IllegalArgumentException(getClass().getSimpleName()
 					+ " - The \"one_shared_wan_network\" option needs to be enabled in simulation_parameters.properties file in order to call \"getWanDownUtilization()\"");
 		return wanDown.getUsedBandwidth();
+	}
+	
+	public List<NetworkLink> getFiberUp() {
+		return this.FiberUpList;
+	}
+	
+	public List<NetworkLink> getFiberDown() {
+		return this.FiberDownList;
 	}
 
 }

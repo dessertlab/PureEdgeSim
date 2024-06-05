@@ -22,6 +22,7 @@ package com.mechalikh.pureedgesim.network;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
 
@@ -93,7 +94,21 @@ public class DefaultNetworkModel extends NetworkModel {
 			vertexList.addAll(path.getVertexList());
 			edgeList.add(from.getCurrentLink(LinkOrientation.UP_LINK));
 			edgeList.addAll(path.getEdgeList());
+			
+			//System.out.println("id: " + id);
+			/**
+			 if (path != null) {
+			        System.out.println("Path from EDGE_DEVICE " + from.getName() + " to EDGE_DATACENTER " + to.getName() + ":");
 
+			        // Stampa i nomi dei nodi nel percorso
+			        System.out.println("Vertices: " + path.getVertexList().stream().map(ComputingNode::getName).collect(Collectors.toList()));
+
+			        // Stampa il tipo di ciascun arco nel percorso
+			        System.out.println("Edges: " + path.getEdgeList().stream().map(NetworkLink::getType).collect(Collectors.toList()));
+
+			    }
+			*/
+			
 		} // Else, if the second is a mobile edge device
 		else if (from.getType() == TYPES.EDGE_DATACENTER && to.getType() == TYPES.EDGE_DEVICE) {
 			long id = simulationManager.getDataCentersManager().getTopology().getUniqueId(from.getId(),
@@ -257,5 +272,21 @@ public class DefaultNetworkModel extends NetworkModel {
 		scheduleNow(simulationManager, DefaultSimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, transfer.getTask());
 	}
 
-	
+	/**
+	 * Defines the logic to be performed by the default network model when the
+	 * simulation starts.
+	 */
+	@Override
+	public void startInternal() {
+		// Do nothing.
+	}
+
+	/**
+	 * Defines the logic to be performed by the default network model when the
+	 * simulation ends.
+	 */
+	@Override
+	public void onSimulationEnd() {
+		// Do something when the simulation finishes.
+	}
 }

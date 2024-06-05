@@ -127,6 +127,10 @@ public class InfrastructureGraph {
 		return getEdgeByType(NetworkLinkTypes.WAN);
 	}
 
+	public List<NetworkLink> getFiberLinks() {
+		return getEdgeByType(NetworkLinkTypes.FIBER);
+	}
+	
 	public List<NetworkLink> getManLinks() {
 		return getEdgeByType(NetworkLinkTypes.MAN);
 	}
