@@ -70,6 +70,14 @@ public class SimulationParameters {
 	public static String cloudDataCentersFile = "PureEdgeSim/settings/cloud.xml";
 
 	/**
+	 * The path to the ONT characteristics file.
+	 * 
+	 * @see com.mechalikh.pureedgesim.simulationmanager.SimulationAbstract#setCustomFilePath(String,
+	 *      Files)
+	 */
+	public static String OntFile = "PureEdgeSim/settings/ONT.xml";
+	
+	/**
 	 * The output folder path.
 	 * 
 	 * @see com.mechalikh.pureedgesim.simulationmanager.SimulationAbstract#setCustomOutputFolder(String)
@@ -86,7 +94,7 @@ public class SimulationParameters {
 	/**
 	 * Simualtion time in seconds.
 	 * 
-	 * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#onSimulationStart()
+	 * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#startInternal()
 	 */
 	public static double simulationDuration;
 
@@ -187,11 +195,11 @@ public class SimulationParameters {
 	/**
 	 * The types of computing nodes.
 	 * 
-	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNodesGenerator#generateDatacentersAndDevices()
+	 * @see com.mechalikh.pureedgesim.datacentersmanager.ComputingNodesGenerator#generateDatacentersAndDevices()
 	 * @see com.mechalikh.pureedgesim.datacentersmanager.ComputingNode#setType(TYPES)
 	 */
 	public enum TYPES {
-		CLOUD, EDGE_DATACENTER, EDGE_DEVICE, NULL
+		CLOUD, EDGE_DATACENTER, EDGE_DEVICE, ONT, NULL
 	}
 
 	/**
@@ -245,6 +253,17 @@ public class SimulationParameters {
 	public static double wanWattHourPerBit;
 
 	/**
+	 *If true, the tasks bandwidth allocation is based on their associated application latency or cpu utilization
+	 */
+	public static boolean BandwidthAllocationOnApplicationType;
+	
+	/**
+	 *Set the value for bandwidth allocation
+	 *Options: LATENCY, MI
+	 */
+	public static String AllocationValue;
+	
+	/**
 	 * If true, all data sent to /received from the cloud will be transmitted
 	 * through the same WAN network (i.e. share the same bandwidth).
 	 * 
@@ -255,6 +274,34 @@ public class SimulationParameters {
 	 */
 	public static boolean useOneSharedWanLink;
 
+	/**
+	 * The Fiber (the links between edge data centers) bandwidth in bits per second.
+	 * 
+	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultTopologyCreator#generateTopologyGraph()
+	 * @see com.mechalikh.pureedgesim.network.NetworkLink#setBandwidth(double)
+	 * @see com.mechalikh.pureedgesim.network.NetworkLinkFiber
+	 */
+	public static double FiberBandwidthBitsPerSecond;
+
+	/**
+	 * The Fiber (the links between edge data centers) latency in seconds.
+	 * 
+	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultTopologyCreator#generateTopologyGraph()
+	 * @see com.mechalikh.pureedgesim.network.NetworkLink#setLatency(double)
+	 * @see com.mechalikh.pureedgesim.network.NetworkLinkFiber
+	 */
+	public static double FiberLatency;
+
+	/**
+	 * The Fiber (the links between edge data centers) energy consumption in watthour
+	 * per bit.
+	 * 
+	 * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultTopologyCreator#generateTopologyGraph()
+	 * @see com.mechalikh.pureedgesim.energy.EnergyModelNetworkLink#getEnergyPerBit()
+	 * @see com.mechalikh.pureedgesim.network.NetworkLink#getEnergyModel()
+	 * @see com.mechalikh.pureedgesim.network.NetworkLinkFiber
+	 */
+	public static double FiberWattHourPerBit;
 	/**
 	 * The MAN (the links between edge data centers) bandwidth in bits per second.
 	 * 
@@ -459,7 +506,7 @@ public class SimulationParameters {
 	/**
 	 * The network model update interval.
 	 * 
-	 * @see com.mechalikh.pureedgesim.network.NetworkLink#onSimulationStart()
+	 * @see com.mechalikh.pureedgesim.network.NetworkLink#startInternal()
 	 */
 	public static double networkUpdateInterval;
 

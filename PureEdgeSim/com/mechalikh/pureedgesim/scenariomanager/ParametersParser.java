@@ -96,6 +96,11 @@ public class ParametersParser extends FileParserAbstract {
 					value -> (value >= 0.001), ">= 0.001");
 			SimulationParameters.useOneSharedWanLink = Boolean
 					.parseBoolean(prop.getProperty("one_shared_wan_network").trim());
+			
+			SimulationParameters.BandwidthAllocationOnApplicationType = Boolean
+					.parseBoolean(prop.getProperty("bandwidth_allocation_based_on_application_type").trim());
+			
+			SimulationParameters.AllocationValue = prop.getProperty("Allocation_value").trim();
 
 			// Mbps to bits per second
 			SimulationParameters.wanBandwidthBitsPerSecond = 1000000
@@ -105,7 +110,13 @@ public class ParametersParser extends FileParserAbstract {
 			// Nanojoules per second (per bit) to Watt Hour (per bit)
 			SimulationParameters.wanWattHourPerBit = 2.7777777777778e-13
 					* assertDouble(prop, "wan_nanojoules_per_bit", value -> (value >= 0), ">= 0");
-
+			
+			SimulationParameters.FiberBandwidthBitsPerSecond = 1000000
+					* assertDouble(prop, "Fiber_bandwidth", value -> (value > 0), "> 0");
+			SimulationParameters.FiberLatency = assertDouble(prop, "Fiber_latency", value -> (value >= 0), ">= 0");
+			SimulationParameters.FiberWattHourPerBit = 2.7777777777778e-13
+					* assertDouble(prop, "Fiber_nanojoules_per_bit", value -> (value >= 0), ">= 0");
+			
 			SimulationParameters.manBandwidthBitsPerSecond = 1000000
 					* assertDouble(prop, "man_bandwidth", value -> (value > 0), "> 0");
 			SimulationParameters.manLatency = assertDouble(prop, "man_latency", value -> (value >= 0), ">= 0");

@@ -80,12 +80,15 @@ public class ApplicationFileParser extends XmlFileParser {
 				// The percentage of devices using this type of applications.
 				int usagePercentage = (int) assertDouble(appElement, "usage_percentage", value -> (value > 0),
 						condition + appElement.getAttribute("name") + application + file);
-
+				
 				// The type of application.
 				String type = appElement.getElementsByTagName("type").item(0).getTextContent();
+				
+				//The name of application
+				String name = appElement.getAttribute("name");
 
 				// Save applications parameters.
-				SimulationParameters.applicationList.add(new Application(type, rate, usagePercentage, latency,
+				SimulationParameters.applicationList.add(new Application(name, type, rate, usagePercentage, latency,
 						containerSize, requestSize, resultsSize, taskLength));
 			}
 
