@@ -57,6 +57,8 @@ public class DefaultOrchestrator extends Orchestrator {
 		ComputingNode node; // get best computing node for this task
 		for (int i = 0; i < nodeList.size(); i++) {
 			node = nodeList.get(i);
+			//System.out.println("Numero di edge datacenter: " + nodeList.size());
+			//System.out.println(offloadingIsPossible(task, node, architecture));
 			if (offloadingIsPossible(task, node, architecture)) {
 				// the weight below represent the priority, the less it is, the more it is //
 				// suitable for offlaoding, you can change it as you want
@@ -110,7 +112,18 @@ public class DefaultOrchestrator extends Orchestrator {
 		// Do something with the task that has been finished
 
 	}
- 
+
+	@Override
+	public void startInternal() {
+		// Do something when the simulation starts. e.g., schedule some events
+	}
+
+	@Override
+	public void onSimulationEnd() {
+		// Do something when the simulation finishes. e.g., print some results.
+		
+	}
+
 	@Override
 	public void processEvent(Event e) {
 		// Process the scheduled events, if any.

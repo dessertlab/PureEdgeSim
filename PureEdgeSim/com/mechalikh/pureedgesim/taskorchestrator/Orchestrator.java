@@ -76,7 +76,7 @@ public abstract class Orchestrator extends SimEntity {
 		
 	}
 
-	// If the orchestration scenario is ClOUD_ONLY send Tasks (cloudlets) only to
+	// If the orchestration scenario is CLOUD_ONLY send Tasks (cloudlets) only to
 	// cloud virtual machines (vms)
 	protected void cloudOnly() {
 		architectureLayers = new String[] { "Cloud" };
@@ -140,6 +140,7 @@ public abstract class Orchestrator extends SimEntity {
 
 			// Send this task to this computing node
 			task.setOffloadingDestination(node);
+			//System.out.println("Nome della destinazione di offload: " + node.getName());
 
 			// Application has been deployed
 			task.getEdgeDevice().setApplicationPlacementLocation(node);
@@ -173,6 +174,8 @@ public abstract class Orchestrator extends SimEntity {
 
 	protected boolean offloadingIsPossible(Task task, ComputingNode node, String[] architectureLayers) {
 		SimulationParameters.TYPES nodeType = node.getType();
+		return true;}
+		/**
 		return ((arrayContains(architectureLayers, "Cloud") && nodeType == SimulationParameters.TYPES.CLOUD) // cloud
 																										// computing
 				|| (arrayContains(architectureLayers, "Edge") && nodeType == SimulationParameters.TYPES.EDGE_DATACENTER // Edge
@@ -192,7 +195,7 @@ public abstract class Orchestrator extends SimEntity {
 								|| (SimulationParameters.enableOrchestrators && sameLocation(node,
 										task.getOrchestrator(), SimulationParameters.edgeDevicesRange)))
 						&& !node.isDead() && !node.isSensor()));
-	}
+	}*/
 
 	public abstract void resultsReturned(Task task);
 
