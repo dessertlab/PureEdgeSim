@@ -41,13 +41,14 @@ import com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager;
  * <p>
  * Once the PureEdgeSim simulation engine has started, it notifies all
  * simulation entities of the start of the simulation in order to schedule their
- * first event. This is guaranteed by the {@link OnSimulationStartListener#onSimulationStart()} method.
+ * first event. This is guaranteed by the {@link SimEntity#startInternal()
+ * startInternal()} method.
  * 
  * @see com.mechalikh.pureedgesim.simulationengine.PureEdgeSim#start()
  * @see com.mechalikh.pureedgesim.simulationmanager.SimulationThread#startSimulation()
- * @see OnSimulationStartListener.onSimulationStart()
+ * @see SimEntity#startInternal()
  * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#startSimulation()
- * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#onSimulationStart()
+ * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#startInternal()
  *
  * @author Charafeddine Mechalikh
  * @since PureEdgeSim 5.0
@@ -81,9 +82,9 @@ public class PureEdgeSim {
 	}
 
 	/**
-	 * Starts the simulation. First, it notifies all simulation entities that implement the {@link OnSimulationStartListener} interface that the
-	 * simulation has started by calling their {@link OnSimulationStartListener#onSimulationStart()
-	 * onSimulationStart()} method. The entities will then schedule their first events.
+	 * Starts the simulation. First, it notifies all simulation entities that the
+	 * simulation has started by calling their {@link SimEntity#startInternal()
+	 * startInternal()} method. The entities will then schedule their first events.
 	 * Once, all the entities has scheduled their fist events, a loop will go
 	 * through all those events to process them one by one, and the simulation time
 	 * is updated according to the time of last processed event. With each processed
@@ -95,28 +96,19 @@ public class PureEdgeSim {
 	 * @see com.mechalikh.pureedgesim.simulationmanager.Simulation#launchSimulation()
 	 * @see com.mechalikh.pureedgesim.simulationmanager.SimulationThread#startSimulation()
 	 * @see com.mechalikh.pureedgesim.simulationmanager.DefaultSimulationManager#startSimulation()
-	 * @see OnSimulationStartListener.onSimulationStart()
+	 * @see SimEntity#startInternal()
 	 * @see #terminate()
 	 */
 	public void start() {
-		// Notify all entities that the simulation has started. 
-		entitiesList.forEach(entity -> {
-		    if (entity instanceof OnSimulationStartListener) {
-		        ((OnSimulationStartListener) entity).onSimulationStart();
-		    }
-		});
-
+		// Notify all entities that the simulation has started.
+		entitiesList.forEach(SimEntity::startInternal);
 
 		while (runClockTickAndProcessFutureEvents(Double.MAX_VALUE) && isRunning) {
 			// All the processing happens inside the method called above
 		}
 
 		// Iteration finished, notify all entities and clear their list
-		entitiesList.forEach(entity -> {
-		    if (entity instanceof OnSimulationEndListener) {
-		        ((OnSimulationEndListener) entity).onSimulationEnd();
-		    }
-		});
+		entitiesList.forEach(SimEntity::onSimulationEnd);
 		entitiesList.clear();
 	}
  
@@ -193,7 +185,7 @@ public class PureEdgeSim {
 	 * @param event the new event.
 	 * @see SimEntity#schedule(SimEntity, Double, int)
 	 * @see SimEntity#schedule(SimEntity, Double, int, Object)
-	 * @see OnSimulationStartListener#onSimulationStart()
+	 * @see SimEntity#startInternal()
 	 * @see FutureQueue
 	 * @see #start()
 	 * @see #runClockTickAndProcessFutureEvents(double)
@@ -209,7 +201,7 @@ public class PureEdgeSim {
 	 * @param event the new event.
 	 * @see SimEntity#schedule(SimEntity, Double, int)
 	 * @see SimEntity#schedule(SimEntity, Double, int, Object)
-	 * @see OnSimulationStartListener#onSimulationStart()
+	 * @see SimEntity#startInternal()
 	 * @see FutureQueue
 	 * @see #start()
 	 * @see #runClockTickAndProcessFutureEvents(double)
@@ -230,7 +222,7 @@ public class PureEdgeSim {
 	 * @see com.mechalikh.pureedgesim.simulationmanager.SimulationThread#loadModels(DefaultSimulationManager
 	 *      simulationManager)
 	 * @see #start()
-	 * @see OnSimulationStartListener#onSimulationStart()
+	 * @see SimEntity#startInternal()
 	 */
 	public void addEntity(SimEntity simEntity) {
 		entitiesList.add(simEntity);

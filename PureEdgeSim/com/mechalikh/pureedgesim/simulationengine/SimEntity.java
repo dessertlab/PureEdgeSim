@@ -63,6 +63,10 @@ public abstract class SimEntity {
 		return e;
 	}
 
+	protected abstract void startInternal();
+
+	protected abstract void onSimulationEnd();
+
 	protected abstract void processEvent(Event e);
 
 }
