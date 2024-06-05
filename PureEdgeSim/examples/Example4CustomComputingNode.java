@@ -21,8 +21,7 @@
 package examples;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNode;
-import com.mechalikh.pureedgesim.simulationengine.Event;
-import com.mechalikh.pureedgesim.simulationengine.OnSimulationStartListener;
+import com.mechalikh.pureedgesim.simulationengine.Event; 
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 
 /**
@@ -36,8 +35,8 @@ import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
  * @author Charafeddine Mechalikh
  * @since PureEdgeSim 2.2
  */
-public class Example4CustomComputingNode extends DefaultComputingNode implements OnSimulationStartListener{
-	private static final int DO_SOMETHING = 12000; // Avoid conflicting with super classes tags
+public class Example4CustomComputingNode extends DefaultComputingNode {
+	private static final int DO_SOMETHING = 12000; // Avoid conflicting with CloudSim Plus Tags
 
 	public Example4CustomComputingNode(SimulationManager simulationManager, double mipsCapacity, int numberOfPes,
 			double storage, double ram) {
@@ -52,8 +51,8 @@ public class Example4CustomComputingNode extends DefaultComputingNode implements
 	 * history.
 	 */
 	@Override
-	public void onSimulationStart() {
-		super.onSimulationStart();
+	public void startInternal() {
+		super.startInternal();
 		scheduleNow(this, DO_SOMETHING);
 
 	}

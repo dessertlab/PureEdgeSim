@@ -27,7 +27,6 @@ import com.mechalikh.pureedgesim.datacentersmanager.ComputingNode;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultComputingNode;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationengine.Event;
-import com.mechalikh.pureedgesim.simulationengine.OnSimulationStartListener;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 
 /** You must read this to understand 
@@ -66,7 +65,7 @@ import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
  * @author Charafeddine Mechalikh
  * @since PureEdgeSim 2.3
  */
-public class Example7ClusteringDevice extends DefaultComputingNode implements OnSimulationStartListener{
+public class Example7ClusteringDevice extends DefaultComputingNode {
 	private double weight = 0;
 	private Example7ClusteringDevice parent;
 	protected Example7ClusteringDevice Orchestrator;
@@ -89,12 +88,12 @@ public class Example7ClusteringDevice extends DefaultComputingNode implements On
 
 	/**
 	 * The clusters update will be done by scheduling events, the first event has to
-	 * be scheduled within the onSimulationStart() method:
+	 * be scheduled within the startInternal() method:
 	 */
 
 	@Override
-	public void onSimulationStart() {
-		super.onSimulationStart();
+	public void startInternal() {
+		super.startInternal();
 		schedule(this, 1, UPDATE_CLUSTERS);
 	}
 
