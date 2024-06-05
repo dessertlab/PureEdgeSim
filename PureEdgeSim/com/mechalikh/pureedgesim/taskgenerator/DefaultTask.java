@@ -34,6 +34,11 @@ import com.mechalikh.pureedgesim.datacentersmanager.ComputingNode;
 public class DefaultTask extends TaskAbstract {
 
 	/**
+	 * The associated application name
+	 */
+	protected String AssociatedAppName;
+	
+	/**
 	 * The time required for offloading the task in seconds.
 	 */
 	protected double offloadingTime;
@@ -102,6 +107,27 @@ public class DefaultTask extends TaskAbstract {
 		super(id);
 	}
 
+	/**
+	 * Sets the associated application name
+	 *
+	 * @param the associated application name
+	 */
+	@Override
+	public Task setAssociatedAppName(String name) {
+		this.AssociatedAppName = name;
+		return this;
+	}
+
+	/**
+	 * Returns the associated application name .
+	 *
+	 * @return the associated application name 
+	 */
+	@Override
+	public String getAssociatedAppName() {
+		return AssociatedAppName;
+	}
+	
 	/**
 	 * Sets the offloading time for the task.
 	 *

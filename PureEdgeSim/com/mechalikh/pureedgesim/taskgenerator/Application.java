@@ -31,6 +31,11 @@ package com.mechalikh.pureedgesim.taskgenerator;
 public class Application {
 
 	/**
+	 * The name of this application
+	 */
+	protected String name;
+	
+	/**
 	 * The rate at which requests are generated for this application
 	 */
 	protected int rate;
@@ -94,8 +99,9 @@ public class Application {
 	 * @param taskLength      the length of time it takes for the application to
 	 *                        execute, in MI (Mega-Instructions)
 	 */
-	public Application(String type, int rate, double usagePercentage, double latency, long containerSize,
+	public Application(String name, String type, int rate, double usagePercentage, double latency, long containerSize,
 			long requestSize, long resultsSize, double taskLength) {
+		setName(name);
 		setType(type);
 		setRate(rate);
 		setUsagePercentage(usagePercentage);
@@ -106,6 +112,24 @@ public class Application {
 		setTaskLength(taskLength);
 	}
 
+	/**
+	 * Gets the name of this application.
+	 *
+	 * @return the name of this application
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Sets the name of this application.
+	 *
+	 * @param rate the name of this application
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	/**
 	 * Gets the rate at which requests are generated for this application.
 	 *

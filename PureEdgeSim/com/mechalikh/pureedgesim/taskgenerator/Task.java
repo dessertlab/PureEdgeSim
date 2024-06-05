@@ -51,6 +51,21 @@ public interface Task extends QueueElement {
 	}
 
 	/**
+	 * Returns the associated application name
+	 * 
+	 * @return the associated application name
+	 */
+	String getAssociatedAppName();
+
+	/**
+	 * Sets the associated application name
+	 * 
+	 * @param the associated application name
+	 * @return the updated Task
+	 */
+	 Task setAssociatedAppName(String name);
+	
+	/**
 	 * Returns the maximum latency of the Task.
 	 * 
 	 * @return the maximum latency of the Task

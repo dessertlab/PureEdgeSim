@@ -108,9 +108,10 @@ public class DefaultTaskGenerator extends TaskGenerator {
 		long length = (long) appParams.getTaskLength();
 		int rate = appParams.getRate();
 		int taskDuration = 60 / rate;
+		String Name = appParams.getName();
 
 		for (int i = 0; i < rate; i++) {
-			Task task = createTask(++id).setType(appParams.getType()).setFileSizeInBits(requestSize)
+			Task task = createTask(++id).setType(appParams.getType()).setFileSizeInBits(requestSize).setAssociatedAppName(Name)
 					.setOutputSizeInBits(outputSize).setContainerSizeInBits(containerSize).setApplicationID(app)
 					.setMaxLatency(maxLatency).setLength(length).setEdgeDevice(dev).setRegistry(getSimulationManager()
 							.getDataCentersManager().getComputingNodesGenerator().getCloudOnlyList().get(0));
