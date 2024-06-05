@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ONT>
+	<ONTDevice name="ont1">
+		<idleConsumption>0</idleConsumption>
+		<maxConsumption>0</maxConsumption>
+		<isOrchestrator>false</isOrchestrator>
+		<cores>0</cores>
+		<mips>0</mips>
+		<ram>0</ram>
+		<storage>0</storage>
+	</ONTDevice>
+	<network_links>
+		<!-- To create a topology add links here. See example 3 -->
+	</network_links>
+</ONT>
