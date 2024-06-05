@@ -20,7 +20,11 @@
  **/
 package com.mechalikh.pureedgesim.simulationmanager;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import com.mechalikh.pureedgesim.datacentersmanager.ComputingNode;
 import com.mechalikh.pureedgesim.network.NetworkModel;
@@ -28,7 +32,6 @@ import com.mechalikh.pureedgesim.scenariomanager.Scenario;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationengine.Event;
-import com.mechalikh.pureedgesim.simulationengine.OnSimulationStartListener;
 import com.mechalikh.pureedgesim.simulationengine.PureEdgeSim;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.taskgenerator.Task;
@@ -51,7 +54,7 @@ import com.mechalikh.pureedgesim.taskgenerator.Task;
  * @author Charafeddine Mechalikh
  * @since PureEdgeSim 4.2
  */
-public class DefaultSimulationManager extends SimulationManager implements OnSimulationStartListener {
+public class DefaultSimulationManager extends SimulationManager {
 
 	/**
 	 * Simulation progress parameters.
@@ -112,7 +115,7 @@ public class DefaultSimulationManager extends SimulationManager implements OnSim
 	 * simulation starts.
 	 */
 	@Override
-	public void onSimulationStart() {
+	public void startInternal() {
 		// Initialize logger variables.
 		simLog.setGeneratedTasks(taskList.size());
 		simLog.setCurrentOrchPolicy(scenario.getStringOrchArchitecture());
@@ -283,6 +286,58 @@ public class DefaultSimulationManager extends SimulationManager implements OnSim
 
 		// Update tasks execution and waiting delays
 		simLog.getTasksExecutionInfos(task);
+		DecimalFormat decimalFormat= new DecimalFormat("0.0000000000");
+		String scenary= scenario.getStringOrchArchitecture();
+		String outputFilesName = SimulationParameters.outputFolder + "/" + simLog.simStartTime;
+		//System.out.println("GetActualCpuTime: " + task.getActualCpuTime());
+		//System.out.println("GetWaitingTime: " + task.getWatingTime());
+		//System.out.println("GetActualNetworkTime: " + task.getActualNetworkTime());
+		//System.out.println("GetDelay: " + task.getTotalDelay());
+		if (scenary.equals("CLOUD_ONLY") || scenary.equals("EDGE_ONLY")){
+			
+			double delay=task.getTotalDelay();
+			double utilization_time_edge=simLog.getCurCpuUtilizationForNodeType(TYPES.EDGE_DATACENTER);
+			double bandwidth = simLog.totalBandwidth/1000000;
+		
+			
+			String outputLatencyFilesNameL= outputFilesName + "/EDGE_ONLY";
+			String outputLatencyFilesNameU= outputFilesName + "/EDGE_ONLY";
+			String outputLatencyFilesNameB= outputFilesName + "/EDGE_ONLY";
+			
+			
+			new File(outputLatencyFilesNameL).mkdirs();
+			
+			outputLatencyFilesNameB += "/BandwidthAllocationValues.csv";
+			
+			try (BufferedWriter writer2 = new BufferedWriter(new FileWriter(outputLatencyFilesNameB, true))) {
+				String valueString = decimalFormat.format(bandwidth) + "\n";
+				writer2.write(valueString);
+			} catch (IOException e) {
+				System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
+			}
+			
+			outputLatencyFilesNameL += "/LatencyTimes.csv";
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputLatencyFilesNameL, true))) {
+				// Converti il valore double in una stringa e scrivila nel file CSV
+				String valueString = decimalFormat.format(delay) + "\n";
+				writer.write(valueString);
+				//System.out.println("Valore double scritto con successo nel file CSV.");
+			} catch (IOException e) {
+				//System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
+				//System.out.println("Current node/task utilization CPU time :"+ simLog.getCurCpuUtilizationForNodeType(SimulationParameters.TYPES.CLOUD));
+			}
+			
+			outputLatencyFilesNameU += "/UtilizationPercentages.csv";
+			try (BufferedWriter writer1 = new BufferedWriter(new FileWriter(outputLatencyFilesNameU, true))) {
+				// Converti il valore double in una stringa e scrivila nel file CSV
+				String valueString = decimalFormat.format(utilization_time_edge) + "\n";
+				writer1.write(valueString);
+				//System.out.println("Valore double scritto con successo nel file CSV.");
+			} catch (IOException e) {
+				//System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
+				//System.out.println("Current node/task utilization CPU time :"+ simLog.getCurCpuUtilizationForNodeType(SimulationParameters.TYPES.CLOUD));
+			}	
+		}
 	}
 
 	/**
@@ -312,6 +367,7 @@ public class DefaultSimulationManager extends SimulationManager implements OnSim
 			// The application has already been placed, so send the task directly to that
 			// computing node.
 			task.setOffloadingDestination(task.getEdgeDevice().getApplicationPlacementLocation());
+			//System.out.println("Nome della destinazione di offload: " + task.getOffloadingDestination().getName());
 
 		simLog.taskSentFromOrchToDest(task);
 
@@ -449,6 +505,13 @@ public class DefaultSimulationManager extends SimulationManager implements OnSim
 		return (distance < RANGE);
 	}
 
-	
+	/**
+	 * Defines the logic to be performed by the simulation manager when the
+	 * simulation starts.
+	 */
+	@Override
+	public void onSimulationEnd() {
+		// Do something when the simulation finishes.
+	}
 
 }
