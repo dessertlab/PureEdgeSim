@@ -191,8 +191,10 @@ public class DefaultTopologyCreator extends TopologyCreator {
 			}
 			NetworkLink ONTup;
 			NetworkLink ONTdown;
-			ONTup = new NetworkLinkFiber(ONTDevice, closestDC, simulationManager, NetworkLinkTypes.FIBER);
-			ONTdown = new NetworkLinkFiber(closestDC, ONTDevice, simulationManager, NetworkLinkTypes.FIBER);
+
+			ComputingNode dc2 = getDataCenterByName("dc1");
+			ONTup = new NetworkLinkFiber(ONTDevice, dc2, simulationManager, NetworkLinkTypes.FIBER);
+			ONTdown = new NetworkLinkFiber(dc2, ONTDevice, simulationManager, NetworkLinkTypes.FIBER);
 			infrastructureTopology.addLink(ONTup);
 			infrastructureTopology.addLink(ONTdown);
 			simulationManager.getNetworkModel().getFiberUp().add(ONTup);
