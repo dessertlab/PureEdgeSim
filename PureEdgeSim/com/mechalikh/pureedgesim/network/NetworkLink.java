@@ -30,6 +30,10 @@ import com.mechalikh.pureedgesim.simulationengine.Event;
 import com.mechalikh.pureedgesim.simulationengine.SimEntity;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.network.Bandwidth;
+import org.apache.fontbox.afm.CharMetric;
+import org.w3c.dom.Element;
+
+import javax.imageio.metadata.IIOMetadataNode;
 
 
 /**
@@ -140,7 +144,7 @@ public class NetworkLink extends SimEntity {
 			// Allocate bandwidth
 			usedBandwidth += transferProgressList.get(i).getRemainingFileSize();
 			
-			if (this.getType()==NetworkLinkTypes.FIBER) 
+			if (this.getType()==NetworkLinkTypes.FIBER)
 				UpdateBandwidth(transferProgressList.get(i));
 				
 			transferProgressList.get(i).setCurrentBandwidth(allocatedBandwidth);
@@ -210,26 +214,62 @@ public class NetworkLink extends SimEntity {
 			transfer.setRemainingFileSize(0);
 
 		double transferDelay = (oldRemainingSize - transfer.getRemainingFileSize()) / transfer.getCurrentBandwidth();
-
+		double x1 = SimulationParameters.dc1_x;
+		double y1 = SimulationParameters.dc1_y;
+		double x2 = SimulationParameters.dc2_x;
+		double y2 = SimulationParameters.dc2_y;
 		// Set the task network delay to decide whether it has failed due to latency or
 		// not.
+
+		if (type == NetworkLinkTypes.LAN)
+			transferDelay+= SimulationParameters.ethernetLatency;
+
+		if (type == NetworkLinkTypes.FIBER)
+			transferDelay+= SimulationParameters.FiberLatency;
+
+		if (type == NetworkLinkTypes.MAN) {
+			double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+
+			//System.out.print("distance:" + distance + "\n");
+
+			// Velocità di propagazione della luce in fibra ottica (200,000 km/s)
+			double propagationSpeed = 200000; // in km/s
+			double distanceInKm = distance / 1000; // Conversione distanza in km
+
+			// Latenza basata sulla distanza
+			double distanceLatency = distanceInKm / propagationSpeed; // in secondi
+
+			//System.out.print("Latenza su distanza" + distanceLatency + "\n");
+
+			double latency_const = SimulationParameters.manLatency;
+			latency = distanceLatency;
+			transferDelay += (latency + latency_const);
+		}
+
+		if (type == NetworkLinkTypes.WAN)
+			transferDelay+= SimulationParameters.wanLatency;
+
 		transfer.getTask().addActualNetworkTime(transferDelay);
 
 		// Update network usage delay
-		if (type == NetworkLinkTypes.LAN)
+		if (type == NetworkLinkTypes.LAN){
 			transfer.setLanNetworkUsage(transfer.getLanNetworkUsage() + transferDelay);
+		}
 		
-		// Update MAN network usage delay
-		else if (type == NetworkLinkTypes.FIBER)
+		// Update FIBER network usage delay
+		else if (type == NetworkLinkTypes.FIBER){
 			transfer.setFiberNetworkUsage(transfer.getFiberNetworkUsage() + transferDelay);
+		}
 
 		// Update MAN network usage delay
-		else if (type == NetworkLinkTypes.MAN)
+		else if (type == NetworkLinkTypes.MAN){
 			transfer.setManNetworkUsage(transfer.getManNetworkUsage() + transferDelay);
+		}
 
 		// Update WAN network usage delay
-		else if (type == NetworkLinkTypes.WAN)
+		else if (type == NetworkLinkTypes.WAN){
 			transfer.setWanNetworkUsage(transfer.getWanNetworkUsage() + transferDelay);
+		}
 
 		if (transfer.getRemainingFileSize() <= 0) { // Transfer finished
 			transfer.setRemainingFileSize(0); // if < 0 set it to 0
@@ -242,7 +282,9 @@ public class NetworkLink extends SimEntity {
 		this.transferProgressList.remove(transfer);
 
 		// Add the network link latency to the task network delay
-		transfer.getTask().addActualNetworkTime(0);
+		double transferDelay = 0.0;
+
+		transfer.getTask().addActualNetworkTime(transferDelay);
 
 		// Remove the previous hop (data has been transferred one hop)
 		transfer.getVertexList().remove(0);
