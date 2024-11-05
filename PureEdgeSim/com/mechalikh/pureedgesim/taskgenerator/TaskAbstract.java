@@ -179,6 +179,8 @@ public abstract class TaskAbstract implements Task, Comparable<Task> {
 	 */
 	@Override
 	public double getWatingTime() {
+		//System.out.print("ExecStartTime:" + this.execStartTime + "\n");
+		//System.out.print("ArrivalTime:" + this.arrivalTime + "\n");
 		return this.execStartTime - this.arrivalTime;
 	}
 
@@ -203,6 +205,7 @@ public abstract class TaskAbstract implements Task, Comparable<Task> {
 	 */
 	@Override
 	public double getTotalDelay() {
+		//System.out.print("getActualNetworkTime"+ this.getActualNetworkTime() + "\n");
 		return this.getActualNetworkTime() + this.getWatingTime() + this.getActualCpuTime();
 	}
 
