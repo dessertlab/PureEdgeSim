@@ -20,6 +20,11 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationengine.Event;
 import com.mechalikh.pureedgesim.simulationengine.SimEntity;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
+import org.apache.fontbox.afm.CharMetric;
+import org.w3c.dom.Element;
+
+import javax.imageio.metadata.IIOMetadataNode;
+
 /**
  * This abstract class represents a computing node in the simulation.
  */
@@ -49,6 +54,8 @@ public abstract class AbstractNode extends SimEntity implements ComputingNode {
      * @see com.mechalikh.pureedgesim.datacentersmanager.DefaultTopologyCreator#getDataCenterByName(String name)
      */
     protected String name;
+
+    protected Double position;
 
     /**
      * The node that orchestrates the task of this device.
@@ -145,6 +152,7 @@ public abstract class AbstractNode extends SimEntity implements ComputingNode {
     public String getName() {
         return name;
     }
+
 
     /**
      * Returns true if this computing node is set as orchestrator.

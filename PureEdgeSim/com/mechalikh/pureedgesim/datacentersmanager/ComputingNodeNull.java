@@ -97,6 +97,7 @@ public class ComputingNodeNull implements ComputingNode {
 	public void setAsConnect(boolean isConnect) {
 		
 	}
+
 	
 	/**
 	 * 
