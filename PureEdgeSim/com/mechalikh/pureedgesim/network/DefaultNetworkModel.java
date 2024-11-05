@@ -96,15 +96,15 @@ public class DefaultNetworkModel extends NetworkModel {
 			edgeList.addAll(path.getEdgeList());
 			
 			//System.out.println("id: " + id);
-			/**
+			/*
 			 if (path != null) {
-			        System.out.println("Path from EDGE_DEVICE " + from.getName() + " to EDGE_DATACENTER " + to.getName() + ":");
+			        System.out.println("Path from EDGE_DEVICE " + from.getName() + " to EDGE_DATACENTER " + to.getName() + ":" + "\n");
 
 			        // Stampa i nomi dei nodi nel percorso
-			        System.out.println("Vertices: " + path.getVertexList().stream().map(ComputingNode::getName).collect(Collectors.toList()));
+			        System.out.println("Vertices: " + path.getVertexList().stream().map(ComputingNode::getName).collect(Collectors.toList()) + "\n");
 
 			        // Stampa il tipo di ciascun arco nel percorso
-			        System.out.println("Edges: " + path.getEdgeList().stream().map(NetworkLink::getType).collect(Collectors.toList()));
+			        System.out.println("Edges: " + path.getEdgeList().stream().map(NetworkLink::getType).collect(Collectors.toList()) + "\n");
 
 			    }
 			*/
