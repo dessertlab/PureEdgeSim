@@ -158,6 +158,11 @@ public class ParametersParser extends FileParserAbstract {
 			SimulationParameters.orchestrationArchitectures = prop.getProperty("orchestration_architectures")
 					.split(",");
 			SimulationParameters.orchestrationAlgorithms = prop.getProperty("orchestration_algorithms").split(",");
+			SimulationParameters.dc1_x = assertDouble(prop, "dc1_x_pos", value -> (value >= 0), ">= 0");
+			SimulationParameters.dc1_y = assertDouble(prop, "dc1_y_pos", value -> (value >= 0), ">= 0");
+			SimulationParameters.dc2_x = assertDouble(prop, "dc2_x_pos", value -> (value >= 0), ">= 0");
+			SimulationParameters.dc2_y = assertDouble(prop, "dc2_y_pos", value -> (value >= 0), ">= 0");
+
 
 			result = true;
 			SimLog.println("%s - Properties file successfully Loaded propoerties file!",getClass().getSimpleName());

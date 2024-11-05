@@ -292,6 +292,11 @@ public class SimulationParameters {
 	 */
 	public static double FiberLatency;
 
+	public static double dc1_x;
+	public static double dc2_x;
+	public static double dc1_y;
+	public static double dc2_y;
+
 	/**
 	 * The Fiber (the links between edge data centers) energy consumption in watthour
 	 * per bit.
