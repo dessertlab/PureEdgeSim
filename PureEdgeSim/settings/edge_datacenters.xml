@@ -6,15 +6,36 @@
 		<maxConsumption>250</maxConsumption>
 		<isOrchestrator>false</isOrchestrator>
 		<location>
-			<x_pos>100</x_pos>
-			<y_pos>100</y_pos>
+			<x_pos>10</x_pos>
+			<y_pos>10</y_pos>
+		</location>
+		<cores>1</cores>
+		<mips>1</mips>
+		<ram>1</ram>
+		<storage>1</storage>
+	</datacenter>
+	<datacenter name="dc2">
+		<periphery>true</periphery>
+		<idleConsumption>100</idleConsumption>
+		<maxConsumption>250</maxConsumption>
+		<isOrchestrator>false</isOrchestrator>
+		<location>
+			<x_pos>1995</x_pos>
+			<y_pos>1995</y_pos>
 		</location>
 		<cores>8</cores>
-		<mips>30000</mips>
-		<ram>64000</ram>
+		<mips>100000</mips>
+		<ram>32000</ram>
 		<storage>1000000</storage>
 	</datacenter>
 	<network_links>
-		<!-- To create a topology add links here. See example 3 -->
+		<link>
+			<from>dc1</from>
+			<to>dc2</to>
+		</link>
+		<link>
+			<from>dc2</from>
+			<to>dc1</to>
+		</link>
 	</network_links>
 </edge_datacenters>

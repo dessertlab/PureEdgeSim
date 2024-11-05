@@ -1,13 +1,12 @@
 <applications>
-	<application name="Smart Lights">
-		<type>Normal</type>
-		<rate>2</rate>
+	<application name="AIGC">
+		<type>Soft-Real Time</type>
+		<rate>20</rate>
 		<usage_percentage>100</usage_percentage>
 		<latency>0.5</latency> <!-- a great number represents no latency-sensitivity -->
-		<container_size>10</container_size>
-		<request_size>1</request_size>
-		<results_size>10</results_size>
-		<task_length>500</task_length>
+		<container_size>500</container_size>
+		<request_size>5000</request_size>
+		<results_size>2000</results_size>
+		<task_length>48000</task_length>
 	</application>
 </applications>
-
