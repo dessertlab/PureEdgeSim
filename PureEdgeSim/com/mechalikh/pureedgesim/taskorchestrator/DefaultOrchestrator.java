@@ -79,7 +79,7 @@ public class DefaultOrchestrator extends Orchestrator {
 					// iteration, or if this computing node has more // cpu mips and // less waiting
 					// tasks
 					min = newMin; // set the first computing node as the best one
-					selected = i;
+					selected = 1;
 				}
 			}
 		}
@@ -98,7 +98,7 @@ public class DefaultOrchestrator extends Orchestrator {
 				minTasksCount = historyMap.get(i);
 				// if this is the first time,
 				// or new min found, so we choose it as the best computing node.
-				selected = i;
+				selected = 1;
 			}
 		}
 		// Assign the tasks to the obtained computing node.
