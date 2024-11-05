@@ -291,31 +291,32 @@ public class DefaultSimulationManager extends SimulationManager {
 		String outputFilesName = SimulationParameters.outputFolder + "/" + simLog.simStartTime;
 		//System.out.println("GetActualCpuTime: " + task.getActualCpuTime());
 		//System.out.println("GetWaitingTime: " + task.getWatingTime());
-		//System.out.println("GetActualNetworkTime: " + task.getActualNetworkTime());
+		//System.out.println("GetActualNetworkTime in Simulazione: " + task.getActualNetworkTime() + "\n");
 		//System.out.println("GetDelay: " + task.getTotalDelay());
 		if (scenary.equals("CLOUD_ONLY") || scenary.equals("EDGE_ONLY")){
-			
+
 			double delay=task.getTotalDelay();
+
 			double utilization_time_edge=simLog.getCurCpuUtilizationForNodeType(TYPES.EDGE_DATACENTER);
 			double bandwidth = simLog.totalBandwidth/1000000;
-		
-			
+
+
 			String outputLatencyFilesNameL= outputFilesName + "/EDGE_ONLY";
 			String outputLatencyFilesNameU= outputFilesName + "/EDGE_ONLY";
 			String outputLatencyFilesNameB= outputFilesName + "/EDGE_ONLY";
-			
-			
+
+
 			new File(outputLatencyFilesNameL).mkdirs();
-			
+
 			outputLatencyFilesNameB += "/BandwidthAllocationValues.csv";
-			
+
 			try (BufferedWriter writer2 = new BufferedWriter(new FileWriter(outputLatencyFilesNameB, true))) {
 				String valueString = decimalFormat.format(bandwidth) + "\n";
 				writer2.write(valueString);
 			} catch (IOException e) {
 				System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
 			}
-			
+
 			outputLatencyFilesNameL += "/LatencyTimes.csv";
 			try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputLatencyFilesNameL, true))) {
 				// Converti il valore double in una stringa e scrivila nel file CSV
@@ -326,7 +327,7 @@ public class DefaultSimulationManager extends SimulationManager {
 				//System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
 				//System.out.println("Current node/task utilization CPU time :"+ simLog.getCurCpuUtilizationForNodeType(SimulationParameters.TYPES.CLOUD));
 			}
-			
+
 			outputLatencyFilesNameU += "/UtilizationPercentages.csv";
 			try (BufferedWriter writer1 = new BufferedWriter(new FileWriter(outputLatencyFilesNameU, true))) {
 				// Converti il valore double in una stringa e scrivila nel file CSV
@@ -336,7 +337,7 @@ public class DefaultSimulationManager extends SimulationManager {
 			} catch (IOException e) {
 				//System.err.println("Errore durante la scrittura nel file CSV: " + e.getMessage());
 				//System.out.println("Current node/task utilization CPU time :"+ simLog.getCurCpuUtilizationForNodeType(SimulationParameters.TYPES.CLOUD));
-			}	
+			}
 		}
 	}
 
@@ -450,8 +451,15 @@ public class DefaultSimulationManager extends SimulationManager {
 		}
 		if (phase == 2 && task.getOffloadingDestination() != ComputingNode.NULL
 				&& task.getOffloadingDestination().getType() != SimulationParameters.TYPES.CLOUD
-				&& (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())
-						|| !sameLocation(task.getOrchestrator(), task.getOffloadingDestination()))) {
+				&& (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) //questo è quello che fallisce
+		 ){
+
+			// Stampa di ciascun controllo per il debug
+			// System.out.print("GetEdgeDevice:"+ task.getEdgeDevice().getName()  + "\n");
+			// System.out.print("GetOrchestrator:"+ task.getOrchestrator().getName()  + "\n");
+			// System.out.print("OffloadingDestination:"+ task.getOffloadingDestination().getName()  + "\n");
+
+
 			task.setFailureReason(Task.FailureReason.FAILED_DUE_TO_DEVICE_MOBILITY);
 			simLog.incrementTasksFailedMobility(task);
 			return setFailed(task, phase);
