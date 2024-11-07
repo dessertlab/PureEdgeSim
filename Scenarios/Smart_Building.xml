@@ -1,0 +1,12 @@
+<applications>
+	<application name="Smart Building">
+		<type>Soft-Real Time</type>
+		<rate>60</rate>
+		<usage_percentage>100</usage_percentage>
+		<latency>0.2</latency> <!-- a great number represents no latency-sensitivity -->
+		<container_size>100</container_size>
+		<request_size>750</request_size>
+		<results_size>500</results_size>
+		<task_length>5000</task_length>
+	</application>
+</applications>
