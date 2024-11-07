@@ -79,7 +79,11 @@ public class DefaultOrchestrator extends Orchestrator {
 					// iteration, or if this computing node has more // cpu mips and // less waiting
 					// tasks
 					min = newMin; // set the first computing node as the best one
-					selected = 1;
+					if(SimulationParameters.Architecture.equals("GENIO")){
+						selected = i;
+					} else {
+						selected = 1;
+					}
 				}
 			}
 		}
