@@ -53,6 +53,8 @@ public class SimulationParameters {
 	 */
 	public static String edgeDataCentersFile = "PureEdgeSim/settings/edge_datacenters.xml";
 
+	public static String edgeDataCentersGENIOFile = "PureEdgeSim/settings/edge_datacenters_GENIO.xml";
+
 	/**
 	 * The path to the edge devices characteristics file.
 	 * 
@@ -262,6 +264,8 @@ public class SimulationParameters {
 	 *Options: LATENCY, MI
 	 */
 	public static String AllocationValue;
+
+	public static String Architecture;
 	
 	/**
 	 * If true, all data sent to /received from the cloud will be transmitted

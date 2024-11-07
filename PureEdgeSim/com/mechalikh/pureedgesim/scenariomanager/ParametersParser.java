@@ -102,6 +102,8 @@ public class ParametersParser extends FileParserAbstract {
 			
 			SimulationParameters.AllocationValue = prop.getProperty("Allocation_value").trim();
 
+			SimulationParameters.Architecture = prop.getProperty("Architecture").trim();
+
 			// Mbps to bits per second
 			SimulationParameters.wanBandwidthBitsPerSecond = 1000000
 					* assertDouble(prop, "wan_bandwidth", value -> (value > 0), "> 0");
