@@ -368,7 +368,7 @@ The simplest and recommended method to run this project is to use an IDE like Ec
 
 To simulate and evaluate the GENIO architecture, we extended PureEdgeSim with custom components, including different link types (optical fiber, MAN, and WAN) to model their different latency and bandwidth characteristics. Then, we compared GENIO with a traditional edge computing architecture, to highlight its performance again.
 
-To make the comparison, you can choose the architecture type in the `simulation_parameters.xml` file, with the *Architecture* option. You can choose beetween GENIO and BASELINE (a traditional edge computing architecture). Depending on the option you choose, a different 'edge_datacenters.xml' file will be configured.
+To make the comparison, you can choose the architecture type in the `simulation_parameters.properties` file, with the *Architecture* option. You can choose beetween GENIO and BASELINE (a traditional edge computing architecture). Depending on the option you choose, a different 'edge_datacenters.xml' file will be configured.
 
 Additionally, you can find the different scenario configuration files in the "Scenarios" folder. For our simulation, we choosed only one scenario.
 
