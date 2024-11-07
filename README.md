@@ -370,7 +370,7 @@ To simulate and evaluate the GENIO architecture, we extended PureEdgeSim with cu
 
 To make the comparison, you can choose the architecture type in the `simulation_parameters.properties` file, with the *Architecture* option. You can choose beetween GENIO and BASELINE (a traditional edge computing architecture). Depending on the option you choose, a different 'edge_datacenters.xml' file will be configured.
 
-Additionally, you can find the different scenario configuration files in the "Scenarios" folder. For our simulation, we choosed only one scenario.
+Additionally, you can find the different scenario configuration files in the "Scenarios" folder. For our simulation, we choosed only one scenario but it is possible to modify the `applications.xml` to use multiple scenarios at the same time (you need to change the usage percentage for each scenario, so that the sum of the percentages equals 100%) or a single different scenario .
 
 
 ### Adding PureEdgeSim as a Dependency
