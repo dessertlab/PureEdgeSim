@@ -174,6 +174,7 @@ public class Simulation extends SimulationAbstract {
 	protected boolean checkFiles() {
 		return (new EdgeDevicesParser(SimulationParameters.edgeDevicesFile).parse()
 				&& new DatacentersParser(SimulationParameters.edgeDataCentersFile, TYPES.EDGE_DATACENTER).parse()
+				&& new DatacentersParser(SimulationParameters.edgeDataCentersGENIOFile, TYPES.EDGE_DATACENTER).parse()
 				&& new DatacentersParser(SimulationParameters.cloudDataCentersFile, TYPES.CLOUD).parse()
 				&& new ParametersParser(SimulationParameters.simulationParametersFile).parse()
 				&& new ApplicationFileParser(SimulationParameters.applicationFile).parse());

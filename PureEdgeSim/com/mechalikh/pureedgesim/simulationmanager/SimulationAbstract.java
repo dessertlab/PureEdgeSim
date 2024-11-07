@@ -185,6 +185,7 @@ public abstract class SimulationAbstract {
 		setCustomFilePath(settingsFolder + "simulation_parameters.properties", Files.SIMULATION_PARAMETERS);
 		setCustomFilePath(settingsFolder + "applications.xml", Files.APPLICATIONS_FILE);
 		setCustomFilePath(settingsFolder + "edge_datacenters.xml", Files.EDGE_DATACENTERS_FILE);
+		setCustomFilePath(settingsFolder + "edge_datacenters_GENIO.xml", Files.EDGE_DATACENTERS_FILE);
 		setCustomFilePath(settingsFolder + "edge_devices.xml", Files.EDGE_DEVICES_FILE);
 		setCustomFilePath(settingsFolder + "cloud.xml", Files.CLOUD_FILE);
 	}
@@ -204,7 +205,11 @@ public abstract class SimulationAbstract {
 			SimulationParameters.applicationFile = path;
 			break;
 		case EDGE_DATACENTERS_FILE:
-			SimulationParameters.edgeDataCentersFile = path;
+			if (SimulationParameters.Architecture.equals("GENIO")){
+				SimulationParameters.edgeDataCentersGENIOFile = path;
+			} else {
+				SimulationParameters.edgeDataCentersFile = path;
+			}
 			break;
 		case EDGE_DEVICES_FILE:
 			SimulationParameters.edgeDevicesFile = path;
