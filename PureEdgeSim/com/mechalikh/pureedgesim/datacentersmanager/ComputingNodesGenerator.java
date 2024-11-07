@@ -216,7 +216,11 @@ public class ComputingNodesGenerator {
 		// Generate Edge and Cloud data centers.
 		generateDataCenters(SimulationParameters.cloudDataCentersFile, SimulationParameters.TYPES.CLOUD);
 
-		generateDataCenters(SimulationParameters.edgeDataCentersFile, SimulationParameters.TYPES.EDGE_DATACENTER);
+		if (SimulationParameters.Architecture.equals("GENIO")){
+			generateDataCenters(SimulationParameters.edgeDataCentersGENIOFile, SimulationParameters.TYPES.EDGE_DATACENTER);
+		} else{
+			generateDataCenters(SimulationParameters.edgeDataCentersFile, SimulationParameters.TYPES.EDGE_DATACENTER);
+		}
 
 		// Generate edge devices.
 		generateEdgeDevices();

@@ -265,23 +265,44 @@ public class DefaultTopologyCreator extends TopologyCreator {
 	 * Generates the network topology from the edge data centers file.
 	 */
 	protected void generateTopologyFromXmlFile() {
-		try (InputStream serversFile = new FileInputStream(SimulationParameters.edgeDataCentersFile)) {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		if (SimulationParameters.Architecture.equals("GENIO")) {
+			try (InputStream serversFile = new FileInputStream(SimulationParameters.edgeDataCentersGENIOFile)) {
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
-			// Disable access to external entities in XML parsing, by disallowing DocType
-			// declaration
-			dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(serversFile);
+				// Disable access to external entities in XML parsing, by disallowing DocType
+				// declaration
+				dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(serversFile);
 
-			// Create the network topology
-			NodeList networkLinks = doc.getElementsByTagName("link");
-			for (int i = 0; i < networkLinks.getLength(); i++) {
-				Element networkLink = (Element) networkLinks.item(i);
-				createNetworkLink(networkLink);
+				// Create the network topology
+				NodeList networkLinks = doc.getElementsByTagName("link");
+				for (int i = 0; i < networkLinks.getLength(); i++) {
+					Element networkLink = (Element) networkLinks.item(i);
+					createNetworkLink(networkLink);
+				}
+			} catch (ParserConfigurationException | SAXException | IOException e) {
+				e.printStackTrace();
 			}
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
+		} else {
+			try (InputStream serversFile = new FileInputStream(SimulationParameters.edgeDataCentersFile)) {
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+
+				// Disable access to external entities in XML parsing, by disallowing DocType
+				// declaration
+				dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(serversFile);
+
+				// Create the network topology
+				NodeList networkLinks = doc.getElementsByTagName("link");
+				for (int i = 0; i < networkLinks.getLength(); i++) {
+					Element networkLink = (Element) networkLinks.item(i);
+					createNetworkLink(networkLink);
+				}
+			} catch (ParserConfigurationException | SAXException | IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
